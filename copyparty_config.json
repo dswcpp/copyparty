@@ -1,0 +1,11 @@
+{
+  "port": 3923,
+  "interface": "0.0.0.0",
+  "working_dir": "E:\\code\\python\\copyparty",
+  "volumes": [],
+  "accounts": [],
+  "enable_upload": true,
+  "show_qr": false,
+  "enable_thumbnails": true,
+  "read_only": false
+}
