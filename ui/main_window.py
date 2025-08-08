@@ -5,10 +5,11 @@
 
 import sys
 import os
-from PyQt6.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout, QSplitter, 
-                             QStatusBar, QMenuBar, QMenu, QMessageBox)
+from PyQt6.QtWidgets import (QWidget, QHBoxLayout, QVBoxLayout, QSplitter,
+                             QStatusBar, QMenuBar, QMenu, QMessageBox, QLabel)
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QPixmap, QIcon
+from PyQt6.QtSvgWidgets import QSvgWidget
 
 # 添加项目根目录到路径
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -28,8 +29,11 @@ class MainWindow(QWidget):
         self.server_manager = app.server_manager
         
         # 窗口设置
-        self.setWindowTitle("CopyParty Desktop v2.0")
+        self.setWindowTitle("CopyParty Desktop Manager")
         self.setGeometry(100, 100, 1200, 700)  # 优化后的尺寸
+
+        # 设置窗口图标
+        self.set_window_icon()
         
         # 初始化UI
         self.init_ui()
@@ -39,6 +43,32 @@ class MainWindow(QWidget):
         
         # 初始化定时器
         self.init_timers()
+
+    def set_window_icon(self):
+        """设置窗口图标"""
+        try:
+            # 尝试使用方形logo作为窗口图标
+            icon_path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'icons', 'logo-sq.svg')
+            if os.path.exists(icon_path):
+                # 对于SVG图标，我们需要先转换为QPixmap
+                svg_widget = QSvgWidget(icon_path)
+                svg_widget.resize(64, 64)
+
+                # 创建QPixmap并设置为图标
+                pixmap = QPixmap(64, 64)
+                pixmap.fill(Qt.GlobalColor.transparent)
+                svg_widget.render(pixmap)
+
+                icon = QIcon(pixmap)
+                self.setWindowIcon(icon)
+                print(f"✓ 窗口图标设置成功: {icon_path}")
+            else:
+                print(f"⚠️ 图标文件不存在: {icon_path}")
+
+        except Exception as e:
+            print(f"❌ 设置窗口图标失败: {e}")
+            # 使用默认图标
+            pass
     
     def init_ui(self):
         """初始化用户界面"""
@@ -193,13 +223,43 @@ class MainWindow(QWidget):
                 font-family: 'Consolas', 'Monaco', monospace;
                 font-size: 11px;
             }
-            
+
+            QCheckBox {
+                font-size: 12px;
+                color: #495057;
+                spacing: 5px;
+                background-color: transparent;
+            }
+
+            QCheckBox::indicator {
+                width: 16px;
+                height: 16px;
+                border: 1px solid #ced4da;
+                border-radius: 3px;
+                background-color: white;
+            }
+
+            QCheckBox::indicator:checked {
+                background-color: #007bff;
+                border-color: #007bff;
+                image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHZpZXdCb3g9IjAgMCAxMiAxMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEwIDNMNC41IDguNUwyIDYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=);
+            }
+
+            QCheckBox::indicator:hover {
+                border-color: #007bff;
+            }
+
+            QCheckBox::indicator:disabled {
+                background-color: #e9ecef;
+                border-color: #dee2e6;
+            }
+
             QSplitter::handle {
                 background-color: #dee2e6;
                 width: 2px;
                 height: 2px;
             }
-            
+
             QSplitter::handle:hover {
                 background-color: #007bff;
             }

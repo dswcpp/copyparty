@@ -152,61 +152,20 @@ class ConfigEditorWidget(QWidget):
         features_group.setLayout(features_layout)
         layout.addWidget(features_group)
         
-        # 账户管理组
-        accounts_group = QGroupBox("账户管理")
-        accounts_layout = QVBoxLayout()
-        
-        # 账户列表
-        self.accounts_list = QListWidget()
-        self.accounts_list.setMaximumHeight(100)
-        accounts_layout.addWidget(self.accounts_list)
-        
-        # 账户操作按钮
-        account_btn_layout = QHBoxLayout()
-        
-        add_account_btn = QPushButton("添加账户")
-        add_account_btn.clicked.connect(self.add_account)
-        account_btn_layout.addWidget(add_account_btn)
-        
-        edit_account_btn = QPushButton("编辑账户")
-        edit_account_btn.clicked.connect(self.edit_account)
-        account_btn_layout.addWidget(edit_account_btn)
-        
-        remove_account_btn = QPushButton("删除账户")
-        remove_account_btn.clicked.connect(self.remove_account)
-        account_btn_layout.addWidget(remove_account_btn)
-        
-        accounts_layout.addLayout(account_btn_layout)
-        accounts_group.setLayout(accounts_layout)
-        layout.addWidget(accounts_group)
-        
-        # 卷管理组
-        volumes_group = QGroupBox("卷管理")
-        volumes_layout = QVBoxLayout()
-        
-        # 卷列表
-        self.volumes_list = QListWidget()
-        self.volumes_list.setMaximumHeight(100)
-        volumes_layout.addWidget(self.volumes_list)
-        
-        # 卷操作按钮
-        volume_btn_layout = QHBoxLayout()
-        
-        add_volume_btn = QPushButton("添加卷")
-        add_volume_btn.clicked.connect(self.add_volume)
-        volume_btn_layout.addWidget(add_volume_btn)
-        
-        edit_volume_btn = QPushButton("编辑卷")
-        edit_volume_btn.clicked.connect(self.edit_volume)
-        volume_btn_layout.addWidget(edit_volume_btn)
-        
-        remove_volume_btn = QPushButton("删除卷")
-        remove_volume_btn.clicked.connect(self.remove_volume)
-        volume_btn_layout.addWidget(remove_volume_btn)
-        
-        volumes_layout.addLayout(volume_btn_layout)
-        volumes_group.setLayout(volumes_layout)
-        layout.addWidget(volumes_group)
+        # 账户和卷管理提示
+        management_group = QGroupBox("账户和卷管理")
+        management_layout = QVBoxLayout()
+
+        info_label = QLabel("账户和卷管理功能已移至专门的'账户&卷管理'标签页")
+        info_label.setStyleSheet("color: #0066cc; font-weight: bold;")
+        management_layout.addWidget(info_label)
+
+        tip_label = QLabel("请点击上方的'账户&卷管理'标签页来管理账户和卷")
+        tip_label.setStyleSheet("color: #666; font-size: 12px;")
+        management_layout.addWidget(tip_label)
+
+        management_group.setLayout(management_layout)
+        layout.addWidget(management_group)
         
         layout.addStretch()
         widget.setLayout(layout)
@@ -565,9 +524,7 @@ class ConfigEditorWidget(QWidget):
             self.expensive_mime_check.setChecked(server_config.expensive_mime)
             self.urlform_edit.setText(server_config.urlform)
             
-            # 更新账户和卷列表
-            self.update_accounts_list()
-            self.update_volumes_list()
+            # 账户和卷管理已移至专门标签页
             
             # 网络配置
             network_config = self.config_manager.network_config
@@ -703,77 +660,9 @@ class ConfigEditorWidget(QWidget):
         if file_path:
             self.cert_path_edit.setText(file_path)
     
-    def update_accounts_list(self):
-        """更新账户列表"""
-        self.accounts_list.clear()
-        for account in self.config_manager.server_config.accounts:
-            account_info = self.config_manager.server_config.get_account_info(account)
-            display_text = f"{account_info['username']} ({account_info['permissions'] or '默认'})"
-            self.accounts_list.addItem(display_text)
+
     
-    def update_volumes_list(self):
-        """更新卷列表"""
-        self.volumes_list.clear()
-        for volume in self.config_manager.server_config.volumes:
-            volume_info = self.config_manager.server_config.get_volume_info(volume)
-            display_text = f"{volume_info['path']} -> {volume_info['alias'] or '/'} ({volume_info['permissions']})"
-            self.volumes_list.addItem(display_text)
-    
-    def add_account(self):
-        """添加账户"""
-        # TODO: 实现账户添加对话框
-        QMessageBox.information(self, "添加账户", "账户添加功能开发中")
-    
-    def edit_account(self):
-        """编辑账户"""
-        # TODO: 实现账户编辑对话框
-        QMessageBox.information(self, "编辑账户", "账户编辑功能开发中")
-    
-    def remove_account(self):
-        """删除账户"""
-        current_row = self.accounts_list.currentRow()
-        if current_row >= 0:
-            accounts = self.config_manager.server_config.accounts
-            if current_row < len(accounts):
-                account = accounts[current_row]
-                account_info = self.config_manager.server_config.get_account_info(account)
-                
-                reply = QMessageBox.question(
-                    self, "确认删除", f"确定要删除账户 '{account_info['username']}' 吗？",
-                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-                )
-                
-                if reply == QMessageBox.StandardButton.Yes:
-                    self.config_manager.server_config.remove_account(account_info['username'])
-                    self.update_accounts_list()
-    
-    def add_volume(self):
-        """添加卷"""
-        # TODO: 实现卷添加对话框
-        QMessageBox.information(self, "添加卷", "卷添加功能开发中")
-    
-    def edit_volume(self):
-        """编辑卷"""
-        # TODO: 实现卷编辑对话框
-        QMessageBox.information(self, "编辑卷", "卷编辑功能开发中")
-    
-    def remove_volume(self):
-        """删除卷"""
-        current_row = self.volumes_list.currentRow()
-        if current_row >= 0:
-            volumes = self.config_manager.server_config.volumes
-            if current_row < len(volumes):
-                volume = volumes[current_row]
-                volume_info = self.config_manager.server_config.get_volume_info(volume)
-                
-                reply = QMessageBox.question(
-                    self, "确认删除", f"确定要删除卷 '{volume_info['path']}' 吗？",
-                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-                )
-                
-                if reply == QMessageBox.StandardButton.Yes:
-                    self.config_manager.server_config.remove_volume(volume_info['path'])
-                    self.update_volumes_list()
+
     
     def load_raw_config(self):
         """加载原始配置到编辑器"""

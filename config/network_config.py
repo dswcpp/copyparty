@@ -48,6 +48,22 @@ class NetworkConfig(BaseConfig):
 
         # 高优先级网络功能 (根据COPYPARTY_COMPLETENESS_ANALYSIS.md)
         self.max_connections: int = 1024  # 最大连接数
+
+        # WebDAV 配置
+        self.webdav_enabled: bool = True  # 默认启用WebDAV
+        self.webdav_auth_required: bool = False  # --dav-auth 强制WebDAV认证
+
+        # TFTP 服务器配置
+        self.tftp_enabled: bool = False  # --tftp 启用TFTP服务器
+        self.tftp_port: int = 3969  # TFTP端口（默认非特权端口）
+        self.tftp_port_range: str = ""  # TFTP回复端口范围
+
+        # SMB/CIFS 服务器配置
+        self.smb_enabled: bool = False  # --smb 启用SMB只读
+        self.smb_write_enabled: bool = False  # --smbw 启用SMB读写
+        self.smb_port: int = 3945  # SMB端口（默认非特权端口）
+        self.smb_version: int = 2  # SMB版本（1或2）
+        self.smb_disable_workaround: bool = False  # --smb-nwa-1 禁用文件数量限制解决方案
         self.max_connections_per_ip: int = 64  # 每IP最大连接数
         self.connection_timeout: int = 30  # 连接超时
         self.keep_alive_timeout: int = 5  # Keep-Alive超时
@@ -252,6 +268,31 @@ class NetworkConfig(BaseConfig):
 
         if self.prefer_ipv6:
             args.append('--prefer-ipv6')
+
+        # WebDAV 配置
+        if self.webdav_auth_required:
+            args.append('--dav-auth')
+
+        # TFTP 服务器配置
+        if self.tftp_enabled:
+            args.extend(['--tftp', str(self.tftp_port)])
+            if self.tftp_port_range:
+                args.extend(['--tftp-port-range', self.tftp_port_range])
+
+        # SMB/CIFS 服务器配置
+        if self.smb_enabled and not self.smb_write_enabled:
+            args.append('--smb')
+        elif self.smb_write_enabled:
+            args.append('--smbw')
+
+        if (self.smb_enabled or self.smb_write_enabled) and self.smb_port != 445:
+            args.extend(['--smb-port', str(self.smb_port)])
+
+        if (self.smb_enabled or self.smb_write_enabled) and self.smb_version == 1:
+            args.append('--smb1')
+
+        if (self.smb_enabled or self.smb_write_enabled) and self.smb_disable_workaround:
+            args.append('--smb-nwa-1')
 
         return args
     

@@ -31,20 +31,115 @@ except ImportError:
         def get_statistics(self): return {}
 
 
-class AccountDialog(QDialog):
-    """账户编辑对话框"""
-    
+class SimpleAccountDialog(QDialog):
+    """简化的账户编辑对话框"""
+
     def __init__(self, account=None, parent=None):
         super().__init__(parent)
         self.account = account
         self.setWindowTitle("编辑账户" if account else "创建账户")
         self.setModal(True)
-        self.resize(500, 400)
-        
+        self.resize(400, 300)
+
+        # 主布局
+        layout = QVBoxLayout()
+
+        # 用户名
+        layout.addWidget(QLabel("用户名:"))
+        self.username_edit = QLineEdit()
+        layout.addWidget(self.username_edit)
+
+        # 密码
+        layout.addWidget(QLabel("密码:"))
+        self.password_edit = QLineEdit()
+        self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.password_edit)
+
+        # 权限设置
+        layout.addWidget(QLabel("权限设置:"))
+
+        # 权限复选框
+        self.perm_checks = {}
+        permissions = [
+            ("读取", "r"), ("写入", "w"), ("移动", "m"), ("删除", "d"),
+            ("管理员", "a"), ("GET", "g"), ("PUT", "p"), ("POST", "o")
+        ]
+
+        for name, code in permissions:
+            check = QCheckBox(name)
+            check.setVisible(True)
+            check.show()
+            self.perm_checks[code] = check
+            layout.addWidget(check)
+
+        # 按钮
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+        self.setLayout(layout)
+
+        # 确保所有权限复选框可见
+        for checkbox in self.perm_checks.values():
+            checkbox.setVisible(True)
+            checkbox.show()
+
+    def showEvent(self, event):
+        """对话框显示事件"""
+        super().showEvent(event)
+        # 在对话框显示后强制设置复选框可见
+        for checkbox in self.perm_checks.values():
+            checkbox.setVisible(True)
+            checkbox.show()
+            checkbox.update()
+        self.update()
+
+    def get_data(self):
+        """获取对话框数据"""
+        permissions = []
+        for code, check in self.perm_checks.items():
+            if check.isChecked():
+                permissions.append(code)
+
+        return {
+            'username': self.username_edit.text().strip(),
+            'password': self.password_edit.text(),
+            'permissions': permissions
+        }
+
+
+class AccountDialog(QDialog):
+    """账户编辑对话框"""
+
+    def __init__(self, account=None, parent=None):
+        super().__init__(parent)
+        self.account = account
+        self.setWindowTitle("编辑账户" if account else "创建账户")
+        self.setModal(True)
+
+        # 初始化权限复选框字典
+        self.perm_checks = {}
+
         self.init_ui()
         if account:
             self.load_account()
-    
+
+        # 在UI初始化后设置大小
+        self.resize(500, 400)
+
+    def showEvent(self, event):
+        """对话框显示事件 - 确保复选框可见"""
+        super().showEvent(event)
+        # 在对话框显示后强制设置复选框可见
+        for checkbox in self.perm_checks.values():
+            checkbox.setVisible(True)
+            checkbox.show()
+            checkbox.update()
+        self.update()
+
     def init_ui(self):
         """初始化用户界面"""
         layout = QVBoxLayout()
@@ -74,22 +169,26 @@ class AccountDialog(QDialog):
         basic_group.setLayout(basic_layout)
         layout.addWidget(basic_group)
         
-        # 权限设置
+        # 权限设置 - 恢复原来的QGroupBox布局
         perm_group = QGroupBox("权限设置")
         perm_layout = QGridLayout()
-        
+
         self.perm_checks = {}
         permissions = [
-            ("读取", "r"), ("写入", "w"), ("移动", "m"), 
-            ("删除", "d"), ("管理员", "a"), ("GET", "g"), 
-            ("PUT", "p"), ("POST", "o")
+            ("读取", "r"), ("写入", "w"), ("移动", "m"), ("删除", "d"),
+            ("管理员", "a"), ("GET", "g"), ("PUT", "p"), ("POST", "o")
         ]
-        
+
+        # 使用2行4列的网格布局
         for i, (name, code) in enumerate(permissions):
             check = QCheckBox(name)
+            check.setVisible(True)  # 确保可见
+            check.show()  # 强制显示
             self.perm_checks[code] = check
-            perm_layout.addWidget(check, i // 4, i % 4)
-        
+            row = i // 4
+            col = i % 4
+            perm_layout.addWidget(check, row, col)
+
         perm_group.setLayout(perm_layout)
         layout.addWidget(perm_group)
         
@@ -126,6 +225,18 @@ class AccountDialog(QDialog):
         layout.addWidget(buttons)
         
         self.setLayout(layout)
+
+    def force_show_permissions(self):
+        """强制显示权限复选框"""
+        # 强制显示所有权限复选框
+        for code, checkbox in self.perm_checks.items():
+            checkbox.setVisible(True)
+            checkbox.show()
+            checkbox.update()
+
+        # 强制更新布局
+        self.updateGeometry()
+        self.update()
     
     def load_account(self):
         """加载账户信息"""
