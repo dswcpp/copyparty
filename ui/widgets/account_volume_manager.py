@@ -156,7 +156,7 @@ class AccountDialog(QDialog):
         self.password_edit = QLineEdit()
         self.password_edit.setEchoMode(QLineEdit.EchoMode.Password)
         basic_layout.addWidget(self.password_edit, 1, 1)
-        
+
         basic_layout.addWidget(QLabel("确认密码:"), 2, 0)
         self.confirm_password_edit = QLineEdit()
         self.confirm_password_edit.setEchoMode(QLineEdit.EchoMode.Password)
@@ -237,24 +237,24 @@ class AccountDialog(QDialog):
         # 强制更新布局
         self.updateGeometry()
         self.update()
-    
+
     def load_account(self):
         """加载账户信息"""
         if not self.account:
             return
-        
+
         self.username_edit.setText(self.account.username)
         self.username_edit.setEnabled(False)  # 不允许修改用户名
         self.enabled_check.setChecked(self.account.enabled)
-        
+
         # 加载权限
         for perm in self.account.permissions:
             if perm.value in self.perm_checks:
                 self.perm_checks[perm.value].setChecked(True)
-        
+
         # 加载卷
         self.volumes_edit.setPlainText('\n'.join(self.account.volumes))
-        
+
         # 加载用户组
         self.groups_edit.setPlainText('\n'.join(self.account.groups))
     
@@ -268,11 +268,11 @@ class AccountDialog(QDialog):
         if not username:
             QMessageBox.warning(self, "错误", "用户名不能为空")
             return None
-        
+
         if not self.account and not password:
             QMessageBox.warning(self, "错误", "密码不能为空")
             return None
-        
+
         if password and password != confirm_password:
             QMessageBox.warning(self, "错误", "密码确认不匹配")
             return None

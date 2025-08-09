@@ -14,7 +14,6 @@ from PyQt6.QtSvgWidgets import QSvgWidget
 # 添加项目根目录到路径
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from .widgets.server_control import ServerControlWidget
 from .widgets.config_editor import ConfigEditorWidget
 from .widgets.monitoring_panel import MonitoringPanel, LogViewer
 
@@ -73,52 +72,31 @@ class MainWindow(QWidget):
     def init_ui(self):
         """初始化用户界面"""
         # 主布局
-        main_layout = QHBoxLayout()
-        main_layout.setSpacing(10)
+        main_layout = QVBoxLayout()
+        main_layout.setSpacing(5)
         main_layout.setContentsMargins(10, 10, 10, 10)
-        
-        # 创建分割器
-        splitter = QSplitter(Qt.Orientation.Horizontal)
-        
-        # 左侧控制面板
-        self.control_panel = ServerControlWidget(self.app)
-        self.control_panel.setFixedWidth(280)  # 紧凑宽度
-        splitter.addWidget(self.control_panel)
-        
-        # 右侧内容区域
-        right_widget = QWidget()
-        right_layout = QVBoxLayout()
-        right_layout.setSpacing(5)
-        right_layout.setContentsMargins(0, 0, 0, 0)
-        
+
         # 上方：配置编辑器和监控面板的分割器
         top_splitter = QSplitter(Qt.Orientation.Horizontal)
-        
+
         # 配置编辑器
         self.config_editor = ConfigEditorWidget(self.app)
         top_splitter.addWidget(self.config_editor)
-        
+
         # 监控面板
         self.monitoring_panel = MonitoringPanel(self.app)
-        self.monitoring_panel.setFixedWidth(300)
+        self.monitoring_panel.setFixedWidth(350)  # 稍微增加宽度
         top_splitter.addWidget(self.monitoring_panel)
-        
+
         # 设置分割器比例
-        top_splitter.setSizes([600, 300])
-        right_layout.addWidget(top_splitter)
-        
+        top_splitter.setSizes([850, 350])
+        main_layout.addWidget(top_splitter)
+
         # 下方：日志查看器
         self.log_viewer = LogViewer(self.app)
         self.log_viewer.setMaximumHeight(150)  # 限制日志区域高度
-        right_layout.addWidget(self.log_viewer)
-        
-        right_widget.setLayout(right_layout)
-        splitter.addWidget(right_widget)
-        
-        # 设置主分割器比例
-        splitter.setSizes([280, 920])
-        
-        main_layout.addWidget(splitter)
+        main_layout.addWidget(self.log_viewer)
+
         self.setLayout(main_layout)
     
     def init_menu(self):
@@ -289,12 +267,9 @@ class MainWindow(QWidget):
         """更新UI状态"""
         try:
             # 更新各个组件
-            if hasattr(self.control_panel, 'update_status'):
-                self.control_panel.update_status()
-            
             if hasattr(self.monitoring_panel, 'update_metrics'):
                 self.monitoring_panel.update_metrics()
-            
+
         except Exception as e:
             print(f"UI更新失败: {e}")
     
@@ -389,13 +364,10 @@ class MainWindow(QWidget):
         try:
             if hasattr(self.config_editor, 'refresh'):
                 self.config_editor.refresh()
-            
-            if hasattr(self.control_panel, 'refresh'):
-                self.control_panel.refresh()
-            
+
             if hasattr(self.monitoring_panel, 'refresh'):
                 self.monitoring_panel.refresh()
-            
+
         except Exception as e:
             print(f"刷新组件失败: {e}")
     

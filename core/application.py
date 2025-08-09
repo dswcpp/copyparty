@@ -37,6 +37,9 @@ class CopyPartyApplication(QMainWindow):
         # 设置窗口图标和其他属性
         self.setup_window_properties()
 
+        # 自动启动服务器
+        self.auto_start_server()
+
     def load_default_config(self):
         """加载默认配置"""
         try:
@@ -296,4 +299,25 @@ class CopyPartyApplication(QMainWindow):
                 event.ignore()
                 return
 
+        # 自动停止服务器
+        self.auto_stop_server()
+
         event.accept()
+
+    def auto_start_server(self):
+        """自动启动服务器"""
+        try:
+            print("🚀 自动启动服务器...")
+            self.server_manager.start_server()
+            print("✅ 服务器启动请求已发送")
+        except Exception as e:
+            print(f"❌ 自动启动服务器失败: {e}")
+
+    def auto_stop_server(self):
+        """自动停止服务器"""
+        try:
+            print("🛑 自动停止服务器...")
+            self.server_manager.stop_server()
+            print("✅ 服务器停止请求已发送")
+        except Exception as e:
+            print(f"❌ 自动停止服务器失败: {e}")

@@ -337,6 +337,9 @@ class ServerManager:
         config_args = self.config_manager.generate_copyparty_args()
         args.extend(config_args)
 
+        # 添加GUI模式参数（如果CopyParty支持）
+        args.extend(["--gui-mode", "--gui-callbacks"])
+
         return args
 
     def _monitor_server(self):

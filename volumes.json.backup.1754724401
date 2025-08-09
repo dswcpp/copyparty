@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "created_at": 1754503284.1689167,
+  "volumes": [
+    {
+      "name": "test_volume",
+      "local_path": "C:\\Users\\Vere\\AppData\\Local\\Temp\\tmpco33rfug\\test_volume",
+      "virtual_path": "/test",
+      "volume_type": "rw",
+      "access_mode": "public",
+      "allowed_users": [],
+      "allowed_groups": [],
+      "denied_users": [],
+      "denied_groups": [],
+      "enable_upload": true,
+      "enable_delete": true,
+      "enable_move": true,
+      "enable_mkdir": true,
+      "enable_listing": true,
+      "enable_search": true,
+      "enable_thumbnail": true,
+      "enable_preview": true,
+      "max_file_size": 0,
+      "max_total_size": 0,
+      "allowed_extensions": [],
+      "denied_extensions": [],
+      "enable_compression": false,
+      "enable_encryption": false,
+      "enable_versioning": false,
+      "enable_backup": false,
+      "description": "",
+      "tags": [],
+      "created_at": 1754503284.1686969,
+      "modified_at": 1754503284.168697
+    }
+  ]
+}
